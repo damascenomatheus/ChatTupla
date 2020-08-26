@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/**/*.jar"
-    ]
-}
