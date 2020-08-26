@@ -1,10 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-14">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/asm-commons-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/browser.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/checkconfigurationfile.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/checkser.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/classdep.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/classserver.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/computedigest.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/computehttpmdcodebase.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/destroy.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/envcheck.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/extra.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/fiddler.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/group.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jarwrapper.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jini-core.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jini-ext.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jsk-debug-policy.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jsk-lib.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jsk-platform.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/jsk-resources.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/mahalo.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/mercury.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/norm.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/outrigger-snaplogstore.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/outrigger.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/phoenix-group.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/phoenix-init.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/phoenix.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/preferredlistgen.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/reggie.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/serviceui.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/sharedvm.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/start.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/sun-util.jar"/>
+	<classpathentry kind="lib" path="/Users/matheusdamasceno/Documents/iOS Projects/PPD Trabalhos/TupleChat/apache-river-2.2.0/lib/tools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
