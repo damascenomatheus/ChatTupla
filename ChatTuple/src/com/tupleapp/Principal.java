@@ -110,7 +110,7 @@ public class Principal {
         		System.out.println("\nNenhuma sala criada\n");
         	} else {
         		while (retorno != null) {
-            		System.out.println("\nSala " + retorno.nome);
+            		System.out.println(retorno.nome);
             		salas.add(retorno);
             	} 
             	while (salas.isEmpty() != true) {
