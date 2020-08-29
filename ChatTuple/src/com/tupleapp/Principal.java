@@ -1,14 +1,15 @@
 package com.tupleapp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import net.jini.core.entry.Entry;
 import net.jini.core.lease.Lease;
 import net.jini.space.JavaSpace;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Principal {
-	private static List<Sala> salas;
+	
+	public static Usuario usuario;
+	public static EspacoDasSalas salaoTemplate = new EspacoDasSalas("Salão", null);
 
 	public static void main(String[] args) {
 		 Lookup finder = new Lookup(JavaSpace.class);
@@ -17,7 +18,7 @@ public class Principal {
              System.out.println("Serviço JavaSpace nao encontrado. Encerrando...");
              System.exit(-1);
          } 
-         
+         criaEspacoSala(space);
          criaUsuario(space);
         
          while(true) {
@@ -42,32 +43,53 @@ public class Principal {
          }
 	}
 	
+	public static void criaEspacoSala(JavaSpace space) {
+		EspacoDasSalas instanciaSalao = new EspacoDasSalas("Salão", new ArrayList<Sala>());
+		try {
+        	Entry retorno = space.readIfExists(salaoTemplate, null, 60 * 1000);
+        	if (retorno == null) {
+        		System.out.println("\nCriou o salão: " + instanciaSalao.nome + "!\n");
+                try { 
+               	 space.write(instanciaSalao, null, Lease.FOREVER);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        	} else {
+        		System.out.println("\nSalão já cadastrado\n");
+        	}
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+	}
+	
 	public static void criaSala(JavaSpace space) {
 		System.out.print("Digite o nome da Sala: ");
 		Scanner scanner = new Scanner(System.in);
         String message = scanner.nextLine();
         
         if (message == null || message.equals("")) {
-            System.exit(0);
-        }
-        Sala sala = new Sala(message.toLowerCase(), null, null);
-        
-        try {
-        	Entry retorno = space.readIfExists(sala, null, 60 * 1000);
-        	if (retorno == null) {
-        		System.out.println("\nCriou a sala: " + message + "\n");
-                
-                try { 
-               	 space.write(sala, null, Lease.FOREVER);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-        	} else {
-        		System.out.println("\nSala já cadastrado\n");
-        		criaSala(space);
-        	}
-        } catch (Exception e) {
-        	e.printStackTrace();
+            
+        } else {
+        	Sala sala = new Sala(message.toLowerCase(), null, null);
+            try {
+            	EspacoDasSalas retorno = (EspacoDasSalas) space.takeIfExists(salaoTemplate, null, 60 * 1000);
+            	System.out.println("\nSalão: " + retorno.nome + " Encontrado!\n");
+            	var salaNomeIgual = retorno.salas.stream().filter((el) ->  el.nome.equals(sala.nome)).findFirst();
+            	if (salaNomeIgual.isEmpty()) {
+            		System.out.println("\nCriou a sala: " + message + "\n");
+            		try { 
+            			retorno.salas.add(sala);
+                   	 	space.write(retorno, null, Lease.FOREVER);
+            		} catch (Exception e) {
+            			e.printStackTrace();
+            		}
+            	} else {
+            		System.out.println("\nSala já cadastrada\n");
+            		criaSala(space);
+            	}
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
         }
 	}
 	
@@ -80,7 +102,7 @@ public class Principal {
             System.exit(0);
         }
         Usuario user = new Usuario(message.toLowerCase(), null);
-        
+        usuario = user;
         try {
         	Entry retorno = space.readIfExists(user, null, 60 * 1000);
         	if (retorno == null) {
@@ -101,26 +123,14 @@ public class Principal {
 	}
 	
 	public static void listaSalas(JavaSpace space) {
-		Sala sala = new Sala();
-		salas = new ArrayList<>();
-		int i = 0;
 		try {
-        	Sala retorno = (Sala) space.takeIfExists(sala, null, 60 * 1000);
-        	if (retorno == null) {
-        		System.out.println("\nNenhuma sala criada\n");
+        	EspacoDasSalas retorno = (EspacoDasSalas) space.readIfExists(salaoTemplate, null, 60 * 1000);
+        	if (retorno != null) {
+                for(Sala sala: retorno.salas) {
+                	System.out.println("\n" + sala.nome + "\n");
+                }
         	} else {
-        		while (retorno != null) {
-            		System.out.println(retorno.nome);
-            		salas.add(retorno);
-            	} 
-            	while (salas.isEmpty() != true) {
-            		try {
-            			space.write(salas.get(i), null, Lease.FOREVER);
-            			i++;
-            		} catch (Exception e) {
-            			e.printStackTrace();
-            		}
-            	}
+        		System.out.println("\nNão existem salas criadas\n");
         	}
         } catch (Exception e) {
         	e.printStackTrace();
