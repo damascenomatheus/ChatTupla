@@ -172,7 +172,7 @@ public class Principal {
         		try { 
         			System.out.println("\nSala: " + salaNomeIgual.nome + " Encontrada!\n");
         			salaNomeIgual.contatos.add(usuario);
-               	 	space.write(salaNomeIgual, null, Lease.FOREVER);
+               	 	space.write(salao, null, Lease.FOREVER);
                	 	System.out.println("\nUsuario inserido!\n");
                	 	//aqui chama o chat
         		} catch (Exception e) {
@@ -205,4 +205,41 @@ public class Principal {
         	e.printStackTrace();
         }
 	}
+	
+	public static void chatPrincipal(JavaSpace space, Entry destinatario) {
+		System.out.print("Escreva suas mensagens(quit para sair da sala): ");
+		Scanner scanner = new Scanner(System.in);
+		
+        while(true) { 
+        	String message = scanner.nextLine();
+        	EspacoDasSalas salaoChat = null;
+			try {
+				salaoChat = (EspacoDasSalas) space.take(salaoTemplate, null, 60 * 1000);
+			} catch (Exception e) {
+				 e.printStackTrace();
+			}
+            if (message.toLowerCase() == "quit") {
+            	 if (destinatario instanceof Usuario == false) {
+            		 Sala sala = salaoChat.salas.stream().filter((el) ->  el.contatos.contains(usuario)).findFirst().orElse(null);
+            		 sala.contatos.remove(usuario);
+        			 try {
+            			 space.write(salaoChat, null, Lease.FOREVER);
+            		 } catch (Exception e) {
+            			 e.printStackTrace();
+            		 }
+            		 break;
+            	 } else {
+            		 break;
+            	 }
+            } else {
+            	try {
+                	Message mensagem = new Message(message, destinatario, usuario.nome);
+                	space.write(mensagem, null, 60 * 5000);
+                } catch (Exception e) {
+                	e.printStackTrace();
+                }
+            }
+            scanner.close();
+            }
+        }
 }
