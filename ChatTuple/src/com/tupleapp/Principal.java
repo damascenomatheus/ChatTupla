@@ -28,7 +28,8 @@ public class Principal {
 			System.out.println("\n1 - Criar Sala");
 			System.out.println("2 - Listar Salas");
 			System.out.println("3 - Entrar em uma Sala");
-			System.out.println("4 - Listar Usuários de uma Sala");
+			System.out.println("4 - Listar usuários de uma Sala");
+			System.out.println("5 - Conversar com um usuário");
 			System.out.print("Digite o número que deseja: ");
 			Scanner scanner = new Scanner(System.in);
 			String message = scanner.nextLine();
@@ -48,6 +49,10 @@ public class Principal {
 			}
 			case "4": {
 				listaUsuarios(space);
+				break;
+			}
+			case "5": {
+				conversaComUsuario(space);
 				break;
 			}
 			default:
@@ -185,6 +190,28 @@ public class Principal {
 			}
 		}
 	}
+	
+	public static void conversaComUsuario(JavaSpace space) {
+		System.out.print("Digite o nome do usuário que deseja conversar: ");
+		Scanner scanner = new Scanner(System.in);
+		String message = scanner.nextLine();
+
+		if (message == null || message.equals("")) {
+
+		} else {
+			Usuario user = new Usuario(message.toLowerCase());
+			try {
+				Usuario destino = (Usuario) space.readIfExists(user, null, 60 * 1000);
+				if (destino == null) {
+					System.out.println("Usuario não existe.");
+				} else {
+					chatPrincipal(space, destino);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public static void listaUsuarios(JavaSpace space) {
 		System.out.print("Digite o nome da Sala que deseja ler a lista de usuários: ");
@@ -212,13 +239,26 @@ public class Principal {
 		Scanner scanner = new Scanner(System.in);
 
 		Thread t1 = new Thread(() -> {
-			Message mensagem = new Message(null, usuario, null);
-			while (readFlag) {
-				try {
-					Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
-					System.out.println(retorno.remetente + ": " + retorno.conteudo);
-				} catch (Exception e) {
-					e.printStackTrace();
+			if(destinatario instanceof Sala) {
+				Message mensagem = new Message(null, usuario, null);
+				while (readFlag) {
+					try {
+						Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
+						System.out.println(retorno.remetente + ": " + retorno.conteudo);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				Usuario remetente = (Usuario) destinatario;
+				Message mensagem = new Message(null, usuario, remetente.nome);
+				while (readFlag) {
+					try {
+						Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
+						System.out.println(retorno.remetente + ": " + retorno.conteudo);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -272,6 +312,7 @@ public class Principal {
 				} else {
 					Message mensagem = new Message(message, destinatario, usuario.nome);
 					try {
+						System.out.println(usuario.nome + ": " + message);
 						space.write(mensagem, null, 60 * 5000);
 						space.write(salaoChat, null, Lease.FOREVER);
 					} catch (Exception e) {
