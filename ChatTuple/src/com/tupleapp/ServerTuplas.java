@@ -11,7 +11,6 @@ import net.jini.space.JavaSpace;
 
 public class ServerTuplas {
 
-	public static Boolean readFlag = true;
 	public static Usuario usuario;
 	public static EspacoDasSalas salaoTemplate = new EspacoDasSalas("Salão", null);
 
@@ -111,20 +110,16 @@ public class ServerTuplas {
 		return nomeDasSalas;
 	}
 
-	public void adicionarUsuario(JavaSpace space) {
-		System.out.print("\nDigite o nome da Sala que deseja entrar: ");
-		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
-
+	public Sala chatEmSala(JavaSpace space, String message) {
 		if (message == null || message.equals("")) {
-
+			return null;
 		} else {
-
 			EspacoDasSalas salao = null;
 			try {
 				salao = (EspacoDasSalas) space.takeIfExists(salaoTemplate, null, 60 * 1000);
 			} catch (Exception e) {
 				e.printStackTrace();
+				return null;
 			}
 
 			var salaNomeIgual = salao.salas.stream().filter((el) -> el.nome.equals(message.toLowerCase())).findFirst()
@@ -135,152 +130,118 @@ public class ServerTuplas {
 					salaNomeIgual.contatos.add(usuario);
 					space.write(salao, null, Lease.FOREVER);
 					System.out.println("\nUsuario inserido!\n");
-					chatPrincipal(space, salaNomeIgual);
+					return salaNomeIgual;
+					//chatPrincipal(space, salaNomeIgual);
 				} catch (Exception e) {
 					e.printStackTrace();
+					return null;
 				}
 			} else {
 				try {
 					space.write(salao, null, Lease.FOREVER);
+					return null;
 				} catch (Exception e) {
 					e.printStackTrace();
+					return null;
 				}
 			}
 		}
 	}
 
-	public void conversaComUsuario(JavaSpace space) {
-		System.out.print("\nDigite o nome do usuário que deseja conversar: ");
-		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
-
+	public Boolean conversaComUsuario(JavaSpace space, String message) {
 		if (message == null || message.equals("")) {
-
+			return false;
 		} else {
 			Usuario user = new Usuario(message.toLowerCase());
 			try {
 				Usuario destino = (Usuario) space.readIfExists(user, null, 60 * 1000);
 				if (destino == null) {
 					System.out.println("Usuario não existe.");
+					return false;
 				} else {
-					chatPrincipal(space, destino);
+					return true;
+					// chatPrincipal(space, destino);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+
+	public List<String> listaUsuarios(JavaSpace space, String message) {
+		List<String> nomeDosUsuarios = new ArrayList<String>();
+		if (message == null || message.equals("")) {
+
+		} else {
+			try {
+				EspacoDasSalas retorno = (EspacoDasSalas) space.readIfExists(salaoTemplate, null, 60 * 1000);
+				Sala sala = retorno.salas.stream().filter((el) -> el.nome.equals(message.toLowerCase())).findFirst()
+						.orElse(null);
+				if (sala.contatos.isEmpty()) {
+
+				} else {
+					for (Usuario user : sala.contatos) {
+						nomeDosUsuarios.add(user.nome);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		return nomeDosUsuarios;
 	}
 
-	public void listaUsuarios(JavaSpace space) {
-		System.out.print("\nDigite o nome da Sala que deseja ler a lista de usuários: ");
-		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
+	public void chatPrincipal(JavaSpace space, Entry destinatario, String message) {
+		EspacoDasSalas salaoChat = null;
 
-		try {
-			EspacoDasSalas retorno = (EspacoDasSalas) space.readIfExists(salaoTemplate, null, 60 * 1000);
-			Sala sala = retorno.salas.stream().filter((el) -> el.nome.equals(message.toLowerCase())).findFirst()
-					.orElse(null);
-			if (sala.contatos.isEmpty()) {
-				System.out.println("\nNão existem usuarios nessa sala\n");
-			} else {
-				for (Usuario user : sala.contatos) {
-					System.out.println("\n" + user.nome);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void chatPrincipal(JavaSpace space, Entry destinatario) {
-		System.out.print("Escreva suas mensagens(quit para sair da sala): \n");
-		Scanner scanner = new Scanner(System.in);
-		readFlag = true;
-
-		Thread t1 = new Thread(() -> {
-			if (destinatario instanceof Sala) {
-				Message mensagem = new Message(null, usuario, null);
-				while (readFlag) {
-					try {
-						Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
-						System.out.println(retorno.remetente + ": " + retorno.conteudo);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				Usuario remetente = (Usuario) destinatario;
-				Message mensagem = new Message(null, usuario, remetente.nome);
-				while (readFlag) {
-					try {
-						Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
-						if (retorno.remetente.equals(remetente.nome)) {
-							System.out.println(retorno.remetente + ": " + retorno.conteudo);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		t1.start();
-
-		while (true) {
-			String message = scanner.nextLine();
-			EspacoDasSalas salaoChat = null;
-
-			if (message.toLowerCase().equals("quit")) {
-				if (destinatario instanceof Usuario == false) {
-					try {
-						salaoChat = (EspacoDasSalas) space.take(salaoTemplate, null, 60 * 1000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					Sala sala = salaoChat.salas.stream().filter((el) -> el.contatos.stream().map((obj) -> obj.nome)
-							.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
-					sala.contatos.removeIf((el) -> el.nome.equals(usuario.nome));
-					try {
-						space.write(salaoChat, null, Lease.FOREVER);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					break;
-				} else {
-					break;
-				}
-			} else {
+		if (message.toLowerCase().equals("quit")) {
+			if (destinatario instanceof Usuario == false) {
 				try {
-					salaoChat = (EspacoDasSalas) space.read(salaoTemplate, null, 60 * 1000);
+					salaoChat = (EspacoDasSalas) space.take(salaoTemplate, null, 60 * 1000);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-				if (destinatario instanceof Sala) {
-					Sala sala = salaoChat.salas.stream().filter((el) -> el.contatos.stream().map((obj) -> obj.nome)
-							.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
-					if (sala != null) {
-						for (Usuario contato : sala.contatos) {
-							if (!contato.nome.equals(usuario.nome)) {
-								Message mensagem = new Message(message, contato, usuario.nome);
-								try {
-									space.write(mensagem, null, 60 * 5000);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+				Sala sala = salaoChat.salas.stream().filter((el) -> el.contatos.stream().map((obj) -> obj.nome)
+						.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
+				sala.contatos.removeIf((el) -> el.nome.equals(usuario.nome));
+				try {
+					space.write(salaoChat, null, Lease.FOREVER);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			try {
+				salaoChat = (EspacoDasSalas) space.read(salaoTemplate, null, 60 * 1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (destinatario instanceof Sala) {
+				Sala sala = salaoChat.salas.stream().filter((el) -> el.contatos.stream().map((obj) -> obj.nome)
+						.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
+				if (sala != null) {
+					for (Usuario contato : sala.contatos) {
+						if (!contato.nome.equals(usuario.nome)) {
+							Message mensagem = new Message(message, contato, usuario.nome);
+							try {
+								space.write(mensagem, null, 60 * 5000);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 					}
-				} else {
-					Message mensagem = new Message(message, destinatario, usuario.nome);
-					try {
-						space.write(mensagem, null, 60 * 5000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				}
+			} else {
+				Message mensagem = new Message(message, destinatario, usuario.nome);
+				try {
+					space.write(mensagem, null, 60 * 5000);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
-		readFlag = false;
 	}
 }

@@ -94,15 +94,15 @@ public class MenuGUI {
 			break;
 		}
 		case 2: {
-			cliente.adicionarUsuario(space);
+			conversaEmSala();
 			break;
 		}
 		case 3: {
-			cliente.listaUsuarios(space);
+			listaUsuarios();
 			break;
 		}
 		case 4: {
-			cliente.conversaComUsuario(space);
+			conversaComUsuario();
 			break;
 		}
 
@@ -114,7 +114,6 @@ public class MenuGUI {
 	public void listaSala() {
 		List<String> salas = cliente.listaSalas(space);
 		JTextArea obj = new JTextArea();
-		obj.setBounds(120,150, 100, 200);
 		String texto = "";
 		for (String sala : salas) {
 			texto = texto + sala + "\n";
@@ -125,7 +124,7 @@ public class MenuGUI {
 	}
 	
 	public void criarSala() {
-		String input = JOptionPane.showInputDialog(null, "Digite o nome da sala", "Criar Sala", JOptionPane.INFORMATION_MESSAGE);
+		String input = JOptionPane.showInputDialog(null, "Digite o nome da sala", "Criar Sala", JOptionPane.QUESTION_MESSAGE);
 		if (input == null || input.equals("")) {
 
 		} else {
@@ -134,6 +133,55 @@ public class MenuGUI {
 				JOptionPane.showMessageDialog(null, "Sala criada com sucesso!");
 			} else {
 				JOptionPane.showMessageDialog(null, "Sala ja cadastrada!");
+			}
+		}
+	}
+	
+	public void listaUsuarios() {
+		String input = JOptionPane.showInputDialog(null, "Digite o nome da sala", "Listar Usuários", JOptionPane.QUESTION_MESSAGE);
+		if (input == null || input.equals("")) {
+
+		} else {
+			List<String> usuarios = cliente.listaUsuarios(space, input);
+			JTextArea obj = new JTextArea();
+			String texto = "";
+			for (String usuario : usuarios) {
+				texto = texto + usuario + "\n";
+				obj.setText(texto);
+			}
+			JOptionPane.showMessageDialog(null, obj);
+		}
+	}
+	
+	public void conversaComUsuario() {
+		String input = JOptionPane.showInputDialog(null, "Digite o nome do usuário", "Conversar com Usuário", JOptionPane.QUESTION_MESSAGE);
+		if (input == null || input.equals("")) {
+
+		} else {
+			Boolean retorno = cliente.conversaComUsuario(space, input);
+			if(retorno) {
+				Usuario user = new Usuario(input.toLowerCase());
+				ChatGUI chat = new ChatGUI(space,cliente, user);
+				chat.apresenta();
+				menu.dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Usuario não existente.");
+			}
+		}
+	}
+	
+	public void conversaEmSala() {
+		String input = JOptionPane.showInputDialog(null, "Digite o nome da sala", "Chat em Sala", JOptionPane.QUESTION_MESSAGE);
+		if (input == null || input.equals("")) {
+
+		} else {
+			Sala retorno = cliente.chatEmSala(space, input);
+			if(retorno != null) {
+				ChatGUI chat = new ChatGUI(space,cliente, retorno);
+				chat.apresenta();
+				menu.dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Sala não existente.");
 			}
 		}
 	}
