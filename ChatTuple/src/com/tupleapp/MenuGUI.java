@@ -27,7 +27,7 @@ public class MenuGUI {
 	public MenuGUI(JavaSpace space, ServerTuplas cliente) {
 		this.space = space;
 		this.cliente = cliente;
-		this.menu = new JFrame("Menu Principal");
+		this.menu = new JFrame("Menu Principal do " + ServerTuplas.usuario.nome);
 		this.criarSala = new JButton("Criar sala!");
 		this.listarSalas = new JButton("Listar salas!");
 		this.entrarEmSala = new JButton("Entrar em uma sala!");
@@ -63,7 +63,7 @@ public class MenuGUI {
 		menu.add(entrarEmSala);
 		menu.add(listarUsuarios);
 		menu.add(conversaPrivada);
-		menu.setBackground(new Color(0, 0, 0));
+		menu.getContentPane().setBackground(new Color(71, 74, 81));
 		menu.setSize(640, 480);
 		menu.setLocationRelativeTo(null);
 		menu.setResizable(false);
@@ -158,9 +158,9 @@ public class MenuGUI {
 		if (input == null || input.equals("")) {
 
 		} else {
+			Usuario user = new Usuario(input.toLowerCase());
 			Boolean retorno = cliente.conversaComUsuario(space, input);
 			if(retorno) {
-				Usuario user = new Usuario(input.toLowerCase());
 				ChatGUI chat = new ChatGUI(space,cliente, user);
 				chat.apresenta();
 				menu.dispose();

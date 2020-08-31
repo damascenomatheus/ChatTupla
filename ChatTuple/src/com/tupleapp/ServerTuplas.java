@@ -2,8 +2,9 @@ package com.tupleapp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import javax.swing.JTextArea;
 
 import net.jini.core.entry.Entry;
 import net.jini.core.lease.Lease;
@@ -131,7 +132,7 @@ public class ServerTuplas {
 					space.write(salao, null, Lease.FOREVER);
 					System.out.println("\nUsuario inserido!\n");
 					return salaNomeIgual;
-					//chatPrincipal(space, salaNomeIgual);
+					// chatPrincipal(space, salaNomeIgual);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return null;
@@ -192,7 +193,7 @@ public class ServerTuplas {
 		return nomeDosUsuarios;
 	}
 
-	public void chatPrincipal(JavaSpace space, Entry destinatario, String message) {
+	public void chatPrincipal(JavaSpace space, Entry destinatario, String message) {	
 		EspacoDasSalas salaoChat = null;
 
 		if (message.toLowerCase().equals("quit")) {

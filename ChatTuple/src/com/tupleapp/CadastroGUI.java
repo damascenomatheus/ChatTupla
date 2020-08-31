@@ -63,7 +63,7 @@ public class CadastroGUI {
 		jf_menu.setLayout(null);
     	jf_menu.add(tx_menu);
 		jf_menu.add(bt_iniciar);
-		jf_menu.setBackground(new Color(0,0,0));
+		jf_menu.getContentPane().setBackground(new Color(71,74,81));
 		jf_menu.setSize(640, 480);
 		jf_menu.setLocationRelativeTo(null);
 		jf_menu.setResizable(false);
