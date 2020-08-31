@@ -56,7 +56,7 @@ public class Principal {
 				break;
 			}
 			default:
-				throw new IllegalArgumentException("Unexpected value: " + message);
+				System.out.println("\nNúmero não reconhecido");
 			}
 		}
 	}
@@ -81,7 +81,7 @@ public class Principal {
 	}
 
 	public static void criaSala(JavaSpace space) {
-		System.out.print("Digite o nome da Sala: ");
+		System.out.print("\nDigite o nome da Sala: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
 
@@ -160,7 +160,7 @@ public class Principal {
 	}
 
 	public static void adicionarUsuario(JavaSpace space) {
-		System.out.print("Digite o nome da Sala que deseja entrar: ");
+		System.out.print("\nDigite o nome da Sala que deseja entrar: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
 
@@ -179,7 +179,7 @@ public class Principal {
 					.orElse(null);
 			if (salaNomeIgual != null) {
 				try {
-					System.out.println("\nSala: " + salaNomeIgual.nome + " Encontrada!\n");
+					System.out.println("\nSala: " + salaNomeIgual.nome + " Encontrada!");
 					salaNomeIgual.contatos.add(usuario);
 					space.write(salao, null, Lease.FOREVER);
 					System.out.println("\nUsuario inserido!\n");
@@ -192,7 +192,7 @@ public class Principal {
 	}
 	
 	public static void conversaComUsuario(JavaSpace space) {
-		System.out.print("Digite o nome do usuário que deseja conversar: ");
+		System.out.print("\nDigite o nome do usuário que deseja conversar: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
 
@@ -214,7 +214,7 @@ public class Principal {
 	}
 
 	public static void listaUsuarios(JavaSpace space) {
-		System.out.print("Digite o nome da Sala que deseja ler a lista de usuários: ");
+		System.out.print("\nDigite o nome da Sala que deseja ler a lista de usuários: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
 
@@ -235,8 +235,9 @@ public class Principal {
 	}
 
 	public static void chatPrincipal(JavaSpace space, Entry destinatario) {
-		System.out.print("Escreva suas mensagens(quit para sair da sala): ");
+		System.out.print("Escreva suas mensagens(quit para sair da sala): \n");
 		Scanner scanner = new Scanner(System.in);
+		readFlag = true;
 
 		Thread t1 = new Thread(() -> {
 			if(destinatario instanceof Sala) {
