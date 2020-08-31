@@ -15,7 +15,6 @@ public class ServerTuplas {
 	public static Usuario usuario;
 	public static EspacoDasSalas salaoTemplate = new EspacoDasSalas("Salão", null);
 
-
 	public void criaEspacoSala(JavaSpace space) {
 		EspacoDasSalas instanciaSalao = new EspacoDasSalas("Salão", new ArrayList<Sala>());
 		try {
@@ -35,39 +34,34 @@ public class ServerTuplas {
 		}
 	}
 
-	public void criaSala(JavaSpace space) {
-		System.out.print("\nDigite o nome da Sala: ");
-		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
-
-		if (message == null || message.equals("")) {
-
-		} else {
-			Sala sala = new Sala(message.toLowerCase(), new ArrayList<Usuario>(), new ArrayList<Message>());
-			try {
-				EspacoDasSalas retorno = (EspacoDasSalas) space.takeIfExists(salaoTemplate, null, 60 * 1000);
-				System.out.println("\nSalão: " + retorno.nome + " Encontrado!\n");
-				var salaNomeIgual = retorno.salas.stream().filter((el) -> el.nome.equals(sala.nome)).findFirst();
-				if (salaNomeIgual.isEmpty()) {
-					System.out.println("\nCriou a sala: " + message + "\n");
-					try {
-						retorno.salas.add(sala);
-						space.write(retorno, null, Lease.FOREVER);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					System.out.println("\nSala já cadastrada.\n");
-					try {
-						space.write(retorno, null, Lease.FOREVER);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					criaSala(space);
+	public Boolean criaSala(JavaSpace space, String message) {
+		Sala sala = new Sala(message.toLowerCase(), new ArrayList<Usuario>(), new ArrayList<Message>());
+		try {
+			EspacoDasSalas retorno = (EspacoDasSalas) space.takeIfExists(salaoTemplate, null, 60 * 1000);
+			System.out.println("\nSalão: " + retorno.nome + " Encontrado!\n");
+			var salaNomeIgual = retorno.salas.stream().filter((el) -> el.nome.equals(sala.nome)).findFirst();
+			if (salaNomeIgual.isEmpty()) {
+				System.out.println("\nCriou a sala: " + message + "\n");
+				try {
+					retorno.salas.add(sala);
+					space.write(retorno, null, Lease.FOREVER);
+					return true;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
+				try {
+					space.write(retorno, null, Lease.FOREVER);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+				return false;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -91,12 +85,12 @@ public class ServerTuplas {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
 
 	public List<String> listaSalas(JavaSpace space) {
 		List<String> nomeDasSalas = new ArrayList<String>();
-		
+
 		try {
 			EspacoDasSalas retorno = (EspacoDasSalas) space.readIfExists(salaoTemplate, null, 60 * 1000);
 			if (retorno != null) {
@@ -113,7 +107,7 @@ public class ServerTuplas {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return nomeDasSalas;
 	}
 
@@ -154,7 +148,7 @@ public class ServerTuplas {
 			}
 		}
 	}
-	
+
 	public void conversaComUsuario(JavaSpace space) {
 		System.out.print("\nDigite o nome do usuário que deseja conversar: ");
 		Scanner scanner = new Scanner(System.in);
@@ -204,7 +198,7 @@ public class ServerTuplas {
 		readFlag = true;
 
 		Thread t1 = new Thread(() -> {
-			if(destinatario instanceof Sala) {
+			if (destinatario instanceof Sala) {
 				Message mensagem = new Message(null, usuario, null);
 				while (readFlag) {
 					try {
@@ -243,9 +237,8 @@ public class ServerTuplas {
 						e.printStackTrace();
 					}
 
-					Sala sala = salaoChat.salas.stream()
-							.filter((el) -> el.contatos.stream().map((obj) -> obj.nome).collect(Collectors.toList()).contains(usuario.nome))
-							.findFirst().orElse(null);
+					Sala sala = salaoChat.salas.stream().filter((el) -> el.contatos.stream().map((obj) -> obj.nome)
+							.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
 					sala.contatos.removeIf((el) -> el.nome.equals(usuario.nome));
 					try {
 						space.write(salaoChat, null, Lease.FOREVER);
@@ -274,7 +267,7 @@ public class ServerTuplas {
 									space.write(mensagem, null, 60 * 5000);
 								} catch (Exception e) {
 									e.printStackTrace();
-								}	
+								}
 							}
 						}
 					}
@@ -287,7 +280,7 @@ public class ServerTuplas {
 					}
 				}
 			}
-		}		
+		}
 		readFlag = false;
 	}
 }

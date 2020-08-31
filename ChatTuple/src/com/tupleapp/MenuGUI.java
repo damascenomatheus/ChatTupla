@@ -86,7 +86,7 @@ public class MenuGUI {
 	public void handlerBotao(Integer id) {
 		switch (id) {
 		case 0: {
-			cliente.criaSala(space);
+			criarSala();
 			break;
 		}
 		case 1: {
@@ -125,7 +125,17 @@ public class MenuGUI {
 	}
 	
 	public void criarSala() {
-		
+		String input = JOptionPane.showInputDialog(null, "Digite o nome da sala", "Criar Sala", JOptionPane.INFORMATION_MESSAGE);
+		if (input == null || input.equals("")) {
+
+		} else {
+			Boolean retorno = cliente.criaSala(space, input);
+			if (retorno) {
+				JOptionPane.showMessageDialog(null, "Sala criada com sucesso!");
+			} else {
+				JOptionPane.showMessageDialog(null, "Sala ja cadastrada!");
+			}
+		}
 	}
 
 }
