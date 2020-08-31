@@ -1,6 +1,7 @@
 package com.tupleapp;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -8,60 +9,14 @@ import net.jini.core.entry.Entry;
 import net.jini.core.lease.Lease;
 import net.jini.space.JavaSpace;
 
-public class Principal {
+public class ServerTuplas {
 
 	public static Boolean readFlag = true;
 	public static Usuario usuario;
 	public static EspacoDasSalas salaoTemplate = new EspacoDasSalas("Salão", null);
 
-	public static void main(String[] args) {
-		Lookup finder = new Lookup(JavaSpace.class);
-		JavaSpace space = (JavaSpace) finder.getService();
-		if (space == null) {
-			System.out.println("Serviço JavaSpace nao encontrado. Encerrando...");
-			System.exit(-1);
-		}
-		criaEspacoSala(space);
-		criaUsuario(space);
 
-		while (true) {
-			System.out.println("\n1 - Criar Sala");
-			System.out.println("2 - Listar Salas");
-			System.out.println("3 - Entrar em uma Sala");
-			System.out.println("4 - Listar usuários de uma Sala");
-			System.out.println("5 - Conversar com um usuário");
-			System.out.print("Digite o número que deseja: ");
-			Scanner scanner = new Scanner(System.in);
-			String message = scanner.nextLine();
-
-			switch (message) {
-			case "1": {
-				criaSala(space);
-				break;
-			}
-			case "2": {
-				listaSalas(space);
-				break;
-			}
-			case "3": {
-				adicionarUsuario(space);
-				break;
-			}
-			case "4": {
-				listaUsuarios(space);
-				break;
-			}
-			case "5": {
-				conversaComUsuario(space);
-				break;
-			}
-			default:
-				System.out.println("\nNúmero não reconhecido");
-			}
-		}
-	}
-
-	public static void criaEspacoSala(JavaSpace space) {
+	public void criaEspacoSala(JavaSpace space) {
 		EspacoDasSalas instanciaSalao = new EspacoDasSalas("Salão", new ArrayList<Sala>());
 		try {
 			Entry retorno = space.readIfExists(salaoTemplate, null, 60 * 1000);
@@ -80,7 +35,7 @@ public class Principal {
 		}
 	}
 
-	public static void criaSala(JavaSpace space) {
+	public void criaSala(JavaSpace space) {
 		System.out.print("\nDigite o nome da Sala: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
@@ -116,36 +71,32 @@ public class Principal {
 		}
 	}
 
-	public static void criaUsuario(JavaSpace space) {
-		System.out.print("Digite seu nome: ");
-		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
-
-		if (message == null || message.equals("")) {
-			System.exit(0);
-		}
-		Usuario user = new Usuario(message.toLowerCase());
+	public Boolean criaUsuario(JavaSpace space, String nome) {
+		Usuario user = new Usuario(nome.toLowerCase());
 		try {
 			Entry retorno = space.readIfExists(user, null, 60 * 1000);
 			if (retorno == null) {
-				System.out.println("\nCriou o usuario: " + message + "\n");
-
 				try {
 					space.write(user, null, Lease.FOREVER);
 					usuario = user;
+					return true;
 				} catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
 			} else {
-				System.out.println("\nUsuario já cadastrado.\n");
-				criaUsuario(space);
+				return false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
+		
 	}
 
-	public static void listaSalas(JavaSpace space) {
+	public List<String> listaSalas(JavaSpace space) {
+		List<String> nomeDasSalas = new ArrayList<String>();
+		
 		try {
 			EspacoDasSalas retorno = (EspacoDasSalas) space.readIfExists(salaoTemplate, null, 60 * 1000);
 			if (retorno != null) {
@@ -153,7 +104,7 @@ public class Principal {
 					System.out.println("\nNão existem salas criadas\n");
 				} else {
 					for (Sala sala : retorno.salas) {
-						System.out.println("\n" + sala.nome);
+						nomeDasSalas.add(sala.nome);
 					}
 				}
 			} else {
@@ -162,9 +113,11 @@ public class Principal {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return nomeDasSalas;
 	}
 
-	public static void adicionarUsuario(JavaSpace space) {
+	public void adicionarUsuario(JavaSpace space) {
 		System.out.print("\nDigite o nome da Sala que deseja entrar: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
@@ -202,7 +155,7 @@ public class Principal {
 		}
 	}
 	
-	public static void conversaComUsuario(JavaSpace space) {
+	public void conversaComUsuario(JavaSpace space) {
 		System.out.print("\nDigite o nome do usuário que deseja conversar: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
@@ -224,7 +177,7 @@ public class Principal {
 		}
 	}
 
-	public static void listaUsuarios(JavaSpace space) {
+	public void listaUsuarios(JavaSpace space) {
 		System.out.print("\nDigite o nome da Sala que deseja ler a lista de usuários: ");
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
