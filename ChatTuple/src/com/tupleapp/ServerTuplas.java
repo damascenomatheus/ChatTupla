@@ -212,8 +212,14 @@ public class ServerTuplas {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			} else {
+				try {
+					space.write(salaoChat, null, Lease.FOREVER);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		} else {
+		} else { 
 			try {
 				salaoChat = (EspacoDasSalas) space.read(salaoTemplate, null, 60 * 1000);
 			} catch (Exception e) {
