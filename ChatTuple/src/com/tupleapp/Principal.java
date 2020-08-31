@@ -103,6 +103,11 @@ public class Principal {
 					}
 				} else {
 					System.out.println("\nSala já cadastrada.\n");
+					try {
+						space.write(retorno, null, Lease.FOREVER);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					criaSala(space);
 				}
 			} catch (Exception e) {
@@ -187,6 +192,12 @@ public class Principal {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			} else {
+				try {
+					space.write(salao, null, Lease.FOREVER);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -256,7 +267,9 @@ public class Principal {
 				while (readFlag) {
 					try {
 						Message retorno = (Message) space.take(mensagem, null, Lease.FOREVER);
-						System.out.println(retorno.remetente + ": " + retorno.conteudo);
+						if (retorno.remetente.equals(remetente.nome)) {
+							System.out.println(retorno.remetente + ": " + retorno.conteudo);
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -270,13 +283,13 @@ public class Principal {
 			EspacoDasSalas salaoChat = null;
 
 			if (message.toLowerCase().equals("quit")) {
-				try {
-					salaoChat = (EspacoDasSalas) space.take(salaoTemplate, null, 60 * 1000);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
 				if (destinatario instanceof Usuario == false) {
+					try {
+						salaoChat = (EspacoDasSalas) space.take(salaoTemplate, null, 60 * 1000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
 					Sala sala = salaoChat.salas.stream()
 							.filter((el) -> el.contatos.stream().map((obj) -> obj.nome).collect(Collectors.toList()).contains(usuario.nome))
 							.findFirst().orElse(null);
@@ -302,20 +315,20 @@ public class Principal {
 							.collect(Collectors.toList()).contains(usuario.nome)).findFirst().orElse(null);
 					if (sala != null) {
 						for (Usuario contato : sala.contatos) {
-							Message mensagem = new Message(message, contato, usuario.nome);
-							try {
-								space.write(mensagem, null, 60 * 5000);
-							} catch (Exception e) {
-								e.printStackTrace();
+							if (!contato.nome.equals(usuario.nome)) {
+								Message mensagem = new Message(message, contato, usuario.nome);
+								try {
+									space.write(mensagem, null, 60 * 5000);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}	
 							}
 						}
 					}
 				} else {
 					Message mensagem = new Message(message, destinatario, usuario.nome);
 					try {
-						System.out.println(usuario.nome + ": " + message);
 						space.write(mensagem, null, 60 * 5000);
-						space.write(salaoChat, null, Lease.FOREVER);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
